@@ -27,4 +27,23 @@ def book_create(request):
   else:
     return Response(serializer.error)
   
+# 특정 id 조회, 수정, 삭제
+@api_view(['GET', 'PUT', 'DELETE'])
+def book(request, pk):
+  book = Book.objects.get(pk=pk)
+  if request.method == 'GET':
+    serializer = BookSerializer(book)
+    return Response(serializer.data)
   
+  if request.method == 'PUT':
+    serializer = BookSerializer(book, data=request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data)
+    return serializer.errors
+  
+  if request.method == 'DELETE':
+    book.delete()
+    return Response({
+      'delete': True
+    })
